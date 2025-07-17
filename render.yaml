@@ -4,24 +4,17 @@
 
 services:
   # 1. The PostgreSQL Database
-  # This service creates a managed PostgreSQL database instance.
   - type: pserv
     name: millionaire-maker-db
-    # Render will automatically use the latest stable version of PostgreSQL.
-    # The connection details (like the DATABASE_URL) will be automatically
-    # injected into the backend service.
     ipAllowList: [] # Allows all IPs to connect. For production, you might restrict this.
 
   # 2. The Node.js Backend Server
-  # This service builds and runs the backend/server.js file.
   - type: web
     name: millionaire-maker-backend
-    # Specifies that this service should be built from a Dockerfile.
+    # The build context is the repo root.
+    # The dockerfilePath is relative to the repo root.
     dockerfilePath: ./backend/Dockerfile
-    # Sets up the environment variables needed by the server.
     envVars:
-      # The DATABASE_URL is a secret value that Render creates for our database.
-      # We reference it here so our server can connect.
       - key: DATABASE_URL
         fromService:
           type: pserv
@@ -29,16 +22,12 @@ services:
           property: connectionString
 
   # 3. The React Frontend (as a Web Service)
-  # This service now builds and serves the React app from its own minimal server.
-  - type: web # CHANGED: Now a standard 'web' service for maximum compatibility.
+  - type: web
     name: millionaire-maker-frontend
-    # Specifies the directory where the frontend code is located.
-    rootDir: ./frontend
-    # Specifies the Dockerfile to build and run the frontend.
+    # The build context is the repo root.
+    # The dockerfilePath is relative to the repo root.
     dockerfilePath: ./frontend/Dockerfile
-    # Sets up the environment variables needed by the frontend during the build process.
     envVars:
-      # This tells the React app the URL of our backend server so it knows where to send API requests.
       - key: REACT_APP_API_URL
         fromService:
           type: web
