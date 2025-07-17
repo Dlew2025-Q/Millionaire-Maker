@@ -6,13 +6,13 @@ services:
   # 1. The PostgreSQL Database
   - type: pserv
     name: millionaire-maker-db
-    ipAllowList: [] # Allows all IPs to connect. For production, you might restrict this.
+    # The ipAllowList is omitted, which defaults to allowing all connections (0.0.0.0/0).
+    # This avoids the YAML parsing error.
 
   # 2. The Node.js Backend Server
   - type: web
     name: millionaire-maker-backend
-    # The build context is the repo root.
-    # The dockerfilePath is relative to the repo root.
+    # The dockerfilePath is relative to the project root.
     dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: DATABASE_URL
@@ -24,8 +24,7 @@ services:
   # 3. The React Frontend (as a Web Service)
   - type: web
     name: millionaire-maker-frontend
-    # The build context is the repo root.
-    # The dockerfilePath is relative to the repo root.
+    # The dockerfilePath is relative to the project root.
     dockerfilePath: ./frontend/Dockerfile
     envVars:
       - key: REACT_APP_API_URL
