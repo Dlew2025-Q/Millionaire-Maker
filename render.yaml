@@ -15,10 +15,12 @@ services:
   - type: web
     name: millionaire-maker-backend
     runtime: docker
+    plan: free # ADDED: Ensures the backend runs on the free instance type.
     dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: DATABASE_URL
         fromDatabase:
+          # This correctly references the database defined above.
           name: millionaire-maker-db
           property: connectionString
 
@@ -26,9 +28,11 @@ services:
   - type: web
     name: millionaire-maker-frontend
     runtime: docker
+    plan: free # ADDED: Ensures the frontend runs on the free instance type.
     dockerfilePath: ./frontend/Dockerfile
     envVars:
       # CORRECTED: We now directly set the value to the predictable public URL
       # of the backend service. Render creates URLs based on the service name.
       - key: REACT_APP_API_URL
         value: https://millionaire-maker-backend.onrender.com
+
