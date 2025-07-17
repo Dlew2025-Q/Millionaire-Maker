@@ -30,7 +30,7 @@ services:
 
   # 3. The React Frontend
   # This service builds the React app and serves it as a static website.
-  - type: static
+  - type: static_site # CORRECTED: The type for a static site is 'static_site'.
     name: millionaire-maker-frontend
     # Specifies the directory where the frontend code is located.
     rootDir: ./frontend
