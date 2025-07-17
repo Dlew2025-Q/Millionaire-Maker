@@ -28,16 +28,14 @@ services:
           name: millionaire-maker-db
           property: connectionString
 
-  # 3. The React Frontend
-  # This service builds the React app and serves it as a static website.
-  - type: static_site # CORRECTED: The type for a static site is 'static_site'.
+  # 3. The React Frontend (as a Web Service)
+  # This service now builds and serves the React app from its own minimal server.
+  - type: web # CHANGED: Now a standard 'web' service for maximum compatibility.
     name: millionaire-maker-frontend
     # Specifies the directory where the frontend code is located.
     rootDir: ./frontend
-    # The command to build the React application for production.
-    buildCommand: npm install && npm run build
-    # The directory where the built, static files are located after the build command runs.
-    publishDir: ./build
+    # Specifies the Dockerfile to build and run the frontend.
+    dockerfilePath: ./frontend/Dockerfile
     # Sets up the environment variables needed by the frontend during the build process.
     envVars:
       # This tells the React app the URL of our backend server so it knows where to send API requests.
