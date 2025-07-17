@@ -6,9 +6,7 @@ databases:
   # 1. The PostgreSQL Database
   # This section is dedicated to database definitions.
   - name: millionaire-maker-db
-    # Render will create a database with this name inside the instance.
     databaseName: millionaire_maker_db
-    # Render will create a user with this name.
     user: mm_user
     plan: free
 
@@ -21,7 +19,6 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          # This correctly references the database defined above.
           name: millionaire-maker-db
           property: connectionString
 
@@ -31,10 +28,7 @@ services:
     runtime: docker
     dockerfilePath: ./frontend/Dockerfile
     envVars:
+      # CORRECTED: We now directly set the value to the predictable public URL
+      # of the backend service. Render creates URLs based on the service name.
       - key: REACT_APP_API_URL
-        fromService:
-          # CORRECTED: Added the required 'type' field.
-          type: web
-          # This now correctly references the backend web service.
-          name: millionaire-maker-backend
-          property: url
+        value: https://millionaire-maker-backend.onrender.com
