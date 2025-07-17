@@ -1,14 +1,18 @@
 # render.yaml
-# This blueprint tells Render to create three services and connect them.
+# This blueprint defines the services and database for the application.
+# It uses the correct top-level keys for 'databases' and 'services'.
 
-services:
+databases:
   # 1. The PostgreSQL Database
-  # This is the minimal, correct definition for a free-tier PostgreSQL service.
-  # Render will automatically generate the database name and user.
-  - type: pserv
-    name: millionaire-maker-db
+  # This section is dedicated to database definitions.
+  - name: millionaire-maker-db
+    # Render will create a database with this name inside the instance.
+    databaseName: millionaire_maker_db
+    # Render will create a user with this name.
+    user: mm_user
     plan: free
 
+services:
   # 2. The Node.js Backend Server
   - type: web
     name: millionaire-maker-backend
@@ -16,8 +20,8 @@ services:
     dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: DATABASE_URL
-        fromService:
-          type: pserv
+        fromDatabase:
+          # This correctly references the database defined above.
           name: millionaire-maker-db
           property: connectionString
 
@@ -29,6 +33,6 @@ services:
     envVars:
       - key: REACT_APP_API_URL
         fromService:
-          type: web
+          # This correctly references the backend web service.
           name: millionaire-maker-backend
           property: url
