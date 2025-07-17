@@ -1,10 +1,13 @@
+# render.yaml
+# This blueprint tells Render to create three services and connect them.
+
 services:
   # 1. The PostgreSQL Database
+  # This is the minimal, correct definition for a free-tier PostgreSQL service.
+  # Render will automatically generate the database name and user.
   - type: pserv
     name: millionaire-maker-db
     plan: free
-    databaseName: millionaire_maker_db
-    user: mm_user
 
   # 2. The Node.js Backend Server
   - type: web
