@@ -4,31 +4,37 @@
 
 services:
   # 1. The PostgreSQL Database
+  # The 'pserv' type is for Render's managed PostgreSQL instances.
   - type: pserv
     name: millionaire-maker-db
-    # The ipAllowList is omitted, which defaults to allowing all connections (0.0.0.0/0).
-    # This avoids the YAML parsing error.
+    # Specifying the free plan is good practice.
+    plan: free
+    # These values will be used to create the database and user.
+    databaseName: millionaire_maker_db
+    user: mm_user
 
   # 2. The Node.js Backend Server
+  # We define this as a 'web' service with a 'docker' runtime.
   - type: web
     name: millionaire-maker-backend
-    # The dockerfilePath is relative to the project root.
+    runtime: docker # CRITICAL FIX: Explicitly tells Render to use the Dockerfile.
     dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: DATABASE_URL
         fromService:
           type: pserv
           name: millionaire-maker-db
-          property: connectionString
+          property: connectionString # This correctly links the database to the backend.
 
   # 3. The React Frontend (as a Web Service)
+  # This is also a 'web' service using Docker.
   - type: web
     name: millionaire-maker-frontend
-    # The dockerfilePath is relative to the project root.
+    runtime: docker # CRITICAL FIX: Explicitly tells Render to use the Dockerfile.
     dockerfilePath: ./frontend/Dockerfile
     envVars:
       - key: REACT_APP_API_URL
         fromService:
           type: web
           name: millionaire-maker-backend
-          property: url
+          property: url # This correctly links the frontend to the backend's public URL.
