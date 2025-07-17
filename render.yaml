@@ -1,0 +1,48 @@
+# render.yaml
+# This is the blueprint for deploying the Millionaire Maker application on Render.
+# It defines three services: a PostgreSQL database, a Node.js backend, and a React frontend.
+
+services:
+  # 1. The PostgreSQL Database
+  # This service creates a managed PostgreSQL database instance.
+  - type: pserv
+    name: millionaire-maker-db
+    # Render will automatically use the latest stable version of PostgreSQL.
+    # The connection details (like the DATABASE_URL) will be automatically
+    # injected into the backend service.
+    ipAllowList: [] # Allows all IPs to connect. For production, you might restrict this.
+
+  # 2. The Node.js Backend Server
+  # This service builds and runs the backend/server.js file.
+  - type: web
+    name: millionaire-maker-backend
+    # Specifies that this service should be built from a Dockerfile.
+    dockerfilePath: ./backend/Dockerfile
+    # Sets up the environment variables needed by the server.
+    envVars:
+      # The DATABASE_URL is a secret value that Render creates for our database.
+      # We reference it here so our server can connect.
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: millionaire-maker-db
+          property: connectionString
+
+  # 3. The React Frontend
+  # This service builds the React app and serves it as a static website.
+  - type: static
+    name: millionaire-maker-frontend
+    # Specifies the directory where the frontend code is located.
+    rootDir: ./frontend
+    # The command to build the React application for production.
+    buildCommand: npm install && npm run build
+    # The directory where the built, static files are located after the build command runs.
+    publishDir: ./build
+    # Sets up the environment variables needed by the frontend during the build process.
+    envVars:
+      # This tells the React app the URL of our backend server so it knows where to send API requests.
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: millionaire-maker-backend
+          property: url
