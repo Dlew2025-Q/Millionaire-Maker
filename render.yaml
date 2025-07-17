@@ -33,6 +33,8 @@ services:
     envVars:
       - key: REACT_APP_API_URL
         fromService:
-          # This correctly references the backend web service.
+          # CORRECTED: Added the required 'type' field.
+          type: web
+          # This now correctly references the backend web service.
           name: millionaire-maker-backend
           property: url
